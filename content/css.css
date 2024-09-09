@@ -19,7 +19,7 @@
     overflow: hidden;
 }
 
-.modal {    
+.modal {
     display: none;
     float: left;
     position: absolute;
@@ -31,13 +31,36 @@
     min-height: 10px;
     z-index: 9999;
     resize: both;
-    overflow: scroll;
+    overflow: auto;
     background-color: rgb(0, 0, 0);
+    border-radius: 10px;
+    border:2px solid;
 }
 
-.move{
+.move {
     cursor: move;
     width: 100%;
     height: 100%;
     /* background-color: aqua; */
+}
+
+.modal::-webkit-scrollbar {
+    /*滚动条整体样式*/
+    width: 20px;
+    /*高宽分别对应横竖滚动条的尺寸*/
+    height: 20px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+    /*滚动条里面小方块*/
+    border-radius: 10px;
+    background: #000000;
+    box-shadow: inset 0 0 5px rgba(0, 122, 204);
+}
+
+.modal::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: #000000;
+    /*滚动条里面轨道*/
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, .1);
 }

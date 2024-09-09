@@ -1,7 +1,7 @@
 //页面上添加右侧图标
 function AddMenu() {
 
-    const html = `<div class="tip" id="tip" >
+    const html = `<div class="tip" id="tip" rounded-container>
                        <img src="https://alohahija-cdn.oss-cn-shanghai.aliyuncs.com/img/modal.png" />
                   </div>
                   <div class="modal" id="modal" >

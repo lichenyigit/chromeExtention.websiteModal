@@ -1,6 +1,6 @@
 {
   "name": "流媒体网站遮幕",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "流媒体网站遮幕",
   "manifest_version": 3,
   "permissions": [
@@ -17,7 +17,8 @@
         "https://*.iqiyi.com/*",
         "https://*.qq.com/*",
         "https://*.bilibili.com/*",
-        "https://*.youtube.com/*"
+        "https://*.youtube.com/*",
+		"https://*.vidhub.me/*"
       ],
       "js": [
         "content/js.js"

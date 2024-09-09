@@ -1,0 +1,32 @@
+{
+  "name": "流媒体网站遮幕",
+  "version": "1.0.1",
+  "description": "流媒体网站遮幕",
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.youku.com/*",
+        "https://*.iqiyi.com/*",
+        "https://*.qq.com/*",
+        "https://*.bilibili.com/*",
+        "https://*.youtube.com/*"
+      ],
+      "js": [
+        "content/js.js"
+      ],
+      "css": [
+        "content/css.css"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ]
+}

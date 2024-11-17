@@ -21,6 +21,8 @@
         "https://*.vidhub.me/*",
         "https://*.douyin.com/*",
         "https://*.jjwu.net/*",
+		"https://*.toutiao.com/*",
+		"https://*.vidhub1.cc/*",		
         "https://*.ixigua.com/*"
       ],
       "js": [

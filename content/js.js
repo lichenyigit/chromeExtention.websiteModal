@@ -1,6 +1,6 @@
 //页面上添加右侧图标
 function AddMenu() {
-    let modelWidth = 300, modelHeight = 40 //遮幕的宽高
+    let modelWidth = 300, modelHeight = 70 //遮幕的宽高
     const html = `<div class="tip" id="video_curtain_tip" rounded-container>
                        <img src="https://alohahija-cdn.oss-cn-shanghai.aliyuncs.com/img/modal.png" />
                   </div>
@@ -32,7 +32,7 @@ function AddMenu() {
             const bottomLeft = {
                 left: videoPosition.left + videoPosition.width * 1 / 6,
                 width: videoPosition.width * 2 / 3,
-                top: videoPosition.top + videoHeight - modelHeight
+                top: videoPosition.top + videoHeight - modelHeight - 50
             };
 
             console.log(`视频底部在屏幕中的位置: 左 ${bottomLeft.left}px, 上${bottomLeft.top}px`, bottomLeft);

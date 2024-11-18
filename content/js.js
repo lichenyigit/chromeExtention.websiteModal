@@ -30,8 +30,8 @@ function AddMenu() {
 
             // 计算视频底部在屏幕中的绝对位置
             const bottomLeft = {
-                left: videoPosition.left + videoPosition.width * 1 / 6,
-                width: videoPosition.width * 2 / 3,
+                left: videoPosition.left + videoPosition.width * 5 / 200,
+                width: videoPosition.width * 5 / 5,
                 top: videoPosition.top + videoHeight - modelHeight - 50
             };
 
@@ -42,7 +42,7 @@ function AddMenu() {
             const modal = document.querySelector('.modal');
             modal.style.left = bottomLeft.left + 'px';
             modal.style.top = bottomLeft.top + 'px';
-            modal.style.width = videoPosition.width * 2 / 3 + 'px';
+            modal.style.width = videoPosition.width * 95 / 100 + 'px';
             modal.style.height = modelHeight + 'px';
         } else {
             console.log('视频元素尚未找到，继续检查...');

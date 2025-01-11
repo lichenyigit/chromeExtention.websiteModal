@@ -1,6 +1,6 @@
 {
   "name": "流媒体网站遮幕",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "流媒体网站遮幕",
   "manifest_version": 3,
   "permissions": [
@@ -21,9 +21,10 @@
         "https://*.vidhub.me/*",
         "https://*.douyin.com/*",
         "https://*.jjwu.net/*",
-		"https://*.toutiao.com/*",
-		"https://*.vidhub1.cc/*",		
-        "https://*.ixigua.com/*"
+        "https://*.toutiao.com/*",
+        "https://*.vidhub1.cc/*",
+        "https://*.ixigua.com/*",
+        "https://*/*"
       ],
       "js": [
         "content/js.js"

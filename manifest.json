@@ -1,7 +1,7 @@
 {
-  "name": "流媒体网站遮幕",
-  "version": "1.0.9",
-  "description": "流媒体网站遮幕",
+  "name": "流媒体网站字幕遮幕",
+  "version": "1.0.10",
+  "description": "流媒体网站字幕遮幕",
   "manifest_version": 3,
   "permissions": [
     "activeTab",

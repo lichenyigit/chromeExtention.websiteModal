@@ -9,20 +9,41 @@ function AddMenu() {
                   </div>
                   `;
 
-    document.body.insertAdjacentHTML(`afterbegin`, html);//追加html
+    // 确保在body最底部插入
+    if (document.body) {
+        // 移除已存在的元素（如果有的话）
+        const existingTip = document.getElementById("video_curtain_tip");
+        const existingModal = document.getElementById("modal");
+        if (existingTip) existingTip.remove();
+        if (existingModal) existingModal.remove();
+        
+        // 在body最底部插入新元素
+        document.body.insertAdjacentHTML('beforeend', html);
+        console.log('HTML 已插入到 body 底部');
+    } else {
+        console.log('body 元素不存在，等待 body 加载');
+        // 如果 body 还不存在，等待它加载
+        const observer = new MutationObserver((mutations, obs) => {
+            if (document.body) {
+                obs.disconnect();
+                document.body.insertAdjacentHTML('beforeend', html);
+                console.log('HTML 已插入到 body 底部（延迟插入）');
+            }
+        });
+        
+        observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true
+        });
+    }
 
+    console.log('init modal sdk ...');
 
-    console.log('init modal sdk ...')
-
-    //获取视频的底部的高度
-    // 获取视频元素
-
-    let intervalId = setInterval(function () {
+    // 使用 MutationObserver 监听 DOM 变化
+    const observer = new MutationObserver((mutations, obs) => {
         const videoElement = document.querySelector('video');
-
-        // 如果获取到了视频元素，则停止循环检查
         if (videoElement) {
-            clearInterval(intervalId);
+            obs.disconnect(); // 停止观察
             // 计算视频元素的绝对位置
             const videoPosition = videoElement.getBoundingClientRect();
             // 获取视频元素的高度，用于计算底部位置
@@ -37,18 +58,20 @@ function AddMenu() {
 
             console.log(`视频底部在屏幕中的位置: 左 ${bottomLeft.left}px, 上${bottomLeft.top}px`, bottomLeft);
 
-
             //设置model的left和top
             const modal = document.querySelector('.modal');
             modal.style.left = bottomLeft.left + 'px';
             modal.style.top = bottomLeft.top + 'px';
             modal.style.width = videoPosition.width * 95 / 100 + 'px';
             modal.style.height = modelHeight + 'px';
-        } else {
-            console.log('视频元素尚未找到，继续检查...');
         }
+    });
 
-    }, 1000);
+    // 开始观察整个文档的变化
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 }
 
 function dragElement(elmnt) {
@@ -92,18 +115,44 @@ function dragElement(elmnt) {
     }
 }
 
+// 立即执行的日志
+console.log('=== 脚本开始加载 ===');
 
 window.onload = function () {
+    console.log('=== 开始执行 ===');
+    console.log('window.onload 事件触发');
+    
     if (document.getElementById("video_curtain_tip") == null) {
+        console.log('未找到 video_curtain_tip 元素，准备添加菜单');
         AddMenu();
+    } else {
+        console.log('已存在 video_curtain_tip 元素');
     }
 
-    dragElement(document.getElementById(("modal")));
-    document.getElementById("video_curtain_tip").addEventListener('click', function () {
-        const modal = document.getElementById("modal")
-        if (modal.style.display == "" || modal.style.display == "none")
-            modal.style.display = "inline"
-        else if (modal.style.display == "inline")
-            modal.style.display = "none"
-    })
-}
+    const modal = document.getElementById("modal");
+    console.log('modal 元素状态:', modal ? '存在' : '不存在');
+    if (modal) {
+        console.log('开始初始化拖拽功能');
+        dragElement(modal);
+    }
+
+    const tip = document.getElementById("video_curtain_tip");
+    console.log('tip 元素状态:', tip ? '存在' : '不存在');
+    if (tip) {
+        console.log('添加点击事件监听器');
+        tip.addEventListener('click', function () {
+            console.log('点击了 tip 元素');
+            const modal = document.getElementById("modal");
+            if (modal) {
+                if (modal.style.display == "" || modal.style.display == "none") {
+                    console.log('显示 modal');
+                    modal.style.display = "inline";
+                } else if (modal.style.display == "inline") {
+                    console.log('隐藏 modal');
+                    modal.style.display = "none";
+                }
+            }
+        });
+    }
+    console.log('=== 初始化完成 ===');
+};

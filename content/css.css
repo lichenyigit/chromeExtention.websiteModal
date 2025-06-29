@@ -28,9 +28,13 @@
     z-index: 99999999999;
     resize: both;
     overflow: auto;
-    background-color: rgb(0, 0, 0);
+    /* background-color: rgb(0, 0, 0); */
+    background-color: rgba(255, 255, 255, 0.5);
+    /* 白色半透明 */
+    backdrop-filter: blur(50px);
+    /* 磨砂效果 */
     border-radius: 10px;
-    border:2px solid;
+    border: 2px solid;
 }
 
 .move {
@@ -49,13 +53,13 @@
 .modal::-webkit-scrollbar-thumb {
     /*滚动条里面小方块*/
     border-radius: 10px;
-    background: #000000;
+    background: #ffffff;
     box-shadow: inset 0 0 5px rgba(0, 122, 204);
 }
 
 .modal::-webkit-scrollbar-track {
     border-radius: 10px;
-    background: #000000;
+    background: #ffffff;
     /*滚动条里面轨道*/
     box-shadow: inset 0 0 10px rgba(0, 0, 0, .1);
 }

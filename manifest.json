@@ -1,11 +1,12 @@
 {
   "name": "流媒体网站字幕遮幕",
-  "version": "1.0.11",
+  "version": "1.0.14",
   "description": "流媒体网站字幕遮幕",
   "manifest_version": 3,
   "permissions": [
     "activeTab",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "background": {
     "service_worker": "background.js"

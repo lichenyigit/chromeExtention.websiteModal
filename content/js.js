@@ -1,6 +1,6 @@
 //页面上添加右侧图标
 function AddMenu() {
-    let modelWidth = 300, modelHeight = 70 //遮幕的宽高
+    let modelWidth = 30, modelHeight = 70 //遮幕的宽高
     const html = `<div class="tip" id="video_curtain_tip" rounded-container>
                        <img src="https://alohahija-cdn.oss-cn-shanghai.aliyuncs.com/img/modal.png" />
                   </div>
@@ -49,21 +49,34 @@ function AddMenu() {
             // 获取视频元素的高度，用于计算底部位置
             const videoHeight = videoElement.offsetHeight;
 
-            // 计算视频底部在屏幕中的绝对位置
-            const bottomLeft = {
-                left: videoPosition.left + videoPosition.width * 5 / 200,
-                width: videoPosition.width * 5 / 5,
-                top: videoPosition.top + videoHeight - modelHeight - 50
-            };
+            // 获取当前网址
+            const currentUrl = window.location.href;
+            
+            // 尝试从本地存储恢复位置
+            chrome.storage.local.get([currentUrl], function(result) {
+                let modalPosition;
+                
+                if (result[currentUrl]) {
+                    // 使用保存的位置
+                    modalPosition = result[currentUrl];
+                    console.log('从本地存储恢复位置:', modalPosition);
+                } else {
+                    // 使用默认位置（视频底部）
+                    modalPosition = {
+                        left: videoPosition.left + videoPosition.width * 5 / 200,
+                        width: videoPosition.width * 95 / 100,
+                        top: videoPosition.top + videoHeight - modelHeight - 50
+                    };
+                    console.log('使用默认位置:', modalPosition);
+                }
 
-            console.log(`视频底部在屏幕中的位置: 左 ${bottomLeft.left}px, 上${bottomLeft.top}px`, bottomLeft);
-
-            //设置model的left和top
-            const modal = document.querySelector('.modal');
-            modal.style.left = bottomLeft.left + 'px';
-            modal.style.top = bottomLeft.top + 'px';
-            modal.style.width = videoPosition.width * 95 / 100 + 'px';
-            modal.style.height = modelHeight + 'px';
+                //设置model的left和top
+                const modal = document.querySelector('.modal');
+                modal.style.left = modalPosition.left + 'px';
+                modal.style.top = modalPosition.top + 'px';
+                modal.style.width = modalPosition.width + 'px';
+                modal.style.height = modelHeight + 'px';
+            });
         }
     });
 
@@ -104,6 +117,18 @@ function dragElement(elmnt) {
         /* stop moving when mouse button is released:*/
         document.onmouseup = null;
         document.onmousemove = null;
+        
+        // 保存当前位置到本地存储
+        const currentUrl = window.location.href;
+        const modalPosition = {
+            left: parseInt(elmnt.style.left),
+            top: parseInt(elmnt.style.top),
+            width: parseInt(elmnt.style.width)
+        };
+        
+        chrome.storage.local.set({[currentUrl]: modalPosition}, function() {
+            console.log('位置已保存到本地存储:', modalPosition);
+        });
     }
 
     if (document.getElementById("move")) {

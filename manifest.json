@@ -1,6 +1,6 @@
 {
   "name": "流媒体网站字幕遮幕",
-  "version": "1.0.14",
+  "version": "1.0.15",
   "description": "流媒体网站字幕遮幕",
   "manifest_version": 3,
   "permissions": [

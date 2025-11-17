@@ -1,10 +1,15 @@
 //页面上添加右侧图标
 function AddMenu() {
     let modelWidth = 30, modelHeight = 70 //遮幕的宽高
-    const html = `<div class="tip" id="video_curtain_tip" rounded-container>
-                       <img src="https://alohahija-cdn.oss-cn-shanghai.aliyuncs.com/img/modal.png" />
-                  </div>
-                  <div class="modal" id="modal" >
+    // 注释掉页面图标，改为通过扩展图标控制
+    // const html = `<div class="tip" id="video_curtain_tip" rounded-container>
+    //                    <img src="https://alohahija-cdn.oss-cn-shanghai.aliyuncs.com/img/modal.png" />
+    //               </div>
+    //               <div class="modal" id="modal" >
+    //                 <div class="move" id="move"></div>
+    //               </div>
+    //               `;
+    const html = `<div class="modal" id="modal" >
                     <div class="move" id="move"></div>
                   </div>
                   `;
@@ -12,9 +17,9 @@ function AddMenu() {
     // 确保在body最底部插入
     if (document.body) {
         // 移除已存在的元素（如果有的话）
-        const existingTip = document.getElementById("video_curtain_tip");
+        // const existingTip = document.getElementById("video_curtain_tip");
         const existingModal = document.getElementById("modal");
-        if (existingTip) existingTip.remove();
+        // if (existingTip) existingTip.remove();
         if (existingModal) existingModal.remove();
         
         // 在body最底部插入新元素
@@ -147,11 +152,13 @@ window.onload = function () {
     console.log('=== 开始执行 ===');
     console.log('window.onload 事件触发');
     
-    if (document.getElementById("video_curtain_tip") == null) {
-        console.log('未找到 video_curtain_tip 元素，准备添加菜单');
+    // 注释掉 tip 元素的检查，改为只检查 modal
+    // if (document.getElementById("video_curtain_tip") == null) {
+    if (document.getElementById("modal") == null) {
+        console.log('未找到 modal 元素，准备添加菜单');
         AddMenu();
     } else {
-        console.log('已存在 video_curtain_tip 元素');
+        console.log('已存在 modal 元素');
     }
 
     const modal = document.getElementById("modal");
@@ -161,12 +168,30 @@ window.onload = function () {
         dragElement(modal);
     }
 
-    const tip = document.getElementById("video_curtain_tip");
-    console.log('tip 元素状态:', tip ? '存在' : '不存在');
-    if (tip) {
-        console.log('添加点击事件监听器');
-        tip.addEventListener('click', function () {
-            console.log('点击了 tip 元素');
+    // 注释掉 tip 的点击事件，改为通过扩展图标控制
+    // const tip = document.getElementById("video_curtain_tip");
+    // console.log('tip 元素状态:', tip ? '存在' : '不存在');
+    // if (tip) {
+    //     console.log('添加点击事件监听器');
+    //     tip.addEventListener('click', function () {
+    //         console.log('点击了 tip 元素');
+    //         const modal = document.getElementById("modal");
+    //         if (modal) {
+    //             if (modal.style.display == "" || modal.style.display == "none") {
+    //                 console.log('显示 modal');
+    //                 modal.style.display = "inline";
+    //             } else if (modal.style.display == "inline") {
+    //                 console.log('隐藏 modal');
+    //                 modal.style.display = "none";
+    //             }
+    //         }
+    //     });
+    // }
+
+    // 监听来自 background 的消息，控制遮幕显示/隐藏
+    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+        if (request.action === "toggleModal") {
+            console.log('收到切换遮幕消息');
             const modal = document.getElementById("modal");
             if (modal) {
                 if (modal.style.display == "" || modal.style.display == "none") {
@@ -176,8 +201,13 @@ window.onload = function () {
                     console.log('隐藏 modal');
                     modal.style.display = "none";
                 }
+                sendResponse({success: true, visible: modal.style.display === "inline"});
+            } else {
+                sendResponse({success: false, message: "Modal not found"});
             }
-        });
-    }
+        }
+        return true; // 保持消息通道开放
+    });
+
     console.log('=== 初始化完成 ===');
 };

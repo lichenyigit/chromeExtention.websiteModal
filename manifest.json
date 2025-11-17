@@ -11,6 +11,9 @@
   "background": {
     "service_worker": "background.js"
   },
+  "action": {
+    "default_title": "切换字幕遮幕"
+  },
   "content_scripts": [
     {
       "matches": [

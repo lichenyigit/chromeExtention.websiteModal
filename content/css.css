@@ -22,10 +22,10 @@
 .modal {
     display: none;
     float: left;
-    position: absolute;
+    position: fixed;
     min-width: 20px;
     min-height: 10px;
-    z-index: 99999999999;
+    z-index: 2147483647;
     resize: both;
     overflow: auto;
     background-color: rgb(0, 0, 0);

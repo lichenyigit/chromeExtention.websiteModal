@@ -158,8 +158,80 @@ function dragElement(elmnt) {
     }
 }
 
+// 确保 modal 始终在最高层级
+function ensureTopLayer() {
+    const modal = document.getElementById("modal");
+    if (!modal || modal.style.display === "none" || modal.style.display === "") {
+        return; // modal 不存在或未显示时不处理
+    }
+
+    // 遍历页面所有元素，找到最高的 z-index
+    let maxZ = 0;
+    const allElements = document.querySelectorAll('*');
+    allElements.forEach(el => {
+        if (el === modal || el.closest('#modal')) return; // 跳过 modal 自身
+        const z = parseInt(window.getComputedStyle(el).zIndex);
+        if (!isNaN(z) && z > maxZ) {
+            maxZ = z;
+        }
+    });
+
+    // 设置 modal 的 z-index 比最高的还高
+    const newZ = Math.min(maxZ + 10, 2147483647);
+    if (parseInt(modal.style.zIndex) !== newZ) {
+        modal.style.zIndex = newZ;
+        console.log('更新 modal z-index:', newZ);
+    }
+}
+
+// 定时检测，确保始终在最上层
+setInterval(ensureTopLayer, 500);
+
 // 立即执行的日志
 console.log('=== 脚本开始加载 ===');
+
+// 将消息监听器移到最外层，确保脚本加载后立即可以接收消息
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if (request.action === "toggleModal") {
+        console.log('收到切换遮幕消息');
+        let modal = document.getElementById("modal");
+
+        // 如果 modal 不存在，先创建它
+        if (!modal) {
+            console.log('Modal 不存在，先创建');
+            AddMenu();
+            modal = document.getElementById("modal");
+            if (modal) {
+                dragElement(modal);
+            }
+        }
+
+        if (modal) {
+            if (modal.style.display == "" || modal.style.display == "none") {
+                // 显示遮幕前，检查是否已定位
+                if (modal.dataset.positioned !== 'true') {
+                    console.log('遮幕未定位，进行定位');
+                    positionModal(modal, function() {
+                        console.log('显示 modal');
+                        modal.style.display = "inline";
+                        sendResponse({success: true, visible: true});
+                    });
+                    return true; // 异步响应
+                } else {
+                    console.log('显示 modal');
+                    modal.style.display = "inline";
+                }
+            } else if (modal.style.display == "inline") {
+                console.log('隐藏 modal');
+                modal.style.display = "none";
+            }
+            sendResponse({success: true, visible: modal.style.display === "inline"});
+        } else {
+            sendResponse({success: false, message: "Modal not found"});
+        }
+    }
+    return true; // 保持消息通道开放
+});
 
 window.onload = function () {
     console.log('=== 开始执行 ===');
@@ -180,58 +252,6 @@ window.onload = function () {
         console.log('开始初始化拖拽功能');
         dragElement(modal);
     }
-
-    // 注释掉 tip 的点击事件，改为通过扩展图标控制
-    // const tip = document.getElementById("video_curtain_tip");
-    // console.log('tip 元素状态:', tip ? '存在' : '不存在');
-    // if (tip) {
-    //     console.log('添加点击事件监听器');
-    //     tip.addEventListener('click', function () {
-    //         console.log('点击了 tip 元素');
-    //         const modal = document.getElementById("modal");
-    //         if (modal) {
-    //             if (modal.style.display == "" || modal.style.display == "none") {
-    //                 console.log('显示 modal');
-    //                 modal.style.display = "inline";
-    //             } else if (modal.style.display == "inline") {
-    //                 console.log('隐藏 modal');
-    //                 modal.style.display = "none";
-    //             }
-    //         }
-    //     });
-    // }
-
-    // 监听来自 background 的消息，控制遮幕显示/隐藏
-    chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
-        if (request.action === "toggleModal") {
-            console.log('收到切换遮幕消息');
-            const modal = document.getElementById("modal");
-            if (modal) {
-                if (modal.style.display == "" || modal.style.display == "none") {
-                    // 显示遮幕前，检查是否已定位
-                    if (modal.dataset.positioned !== 'true') {
-                        console.log('遮幕未定位，进行定位');
-                        positionModal(modal, function() {
-                            console.log('显示 modal');
-                            modal.style.display = "inline";
-                            sendResponse({success: true, visible: true});
-                        });
-                        return true; // 异步响应
-                    } else {
-                        console.log('显示 modal');
-                        modal.style.display = "inline";
-                    }
-                } else if (modal.style.display == "inline") {
-                    console.log('隐藏 modal');
-                    modal.style.display = "none";
-                }
-                sendResponse({success: true, visible: modal.style.display === "inline"});
-            } else {
-                sendResponse({success: false, message: "Modal not found"});
-            }
-        }
-        return true; // 保持消息通道开放
-    });
 
     console.log('=== 初始化完成 ===');
 };

@@ -1,14 +1,55 @@
 //页面上添加右侧图标
+const MODEL_HEIGHT = 70; // 遮幕的高度
+
+// 定位遮幕的函数（根据 video 或窗口）
+function positionModal(modal, callback) {
+    const currentUrl = window.location.href;
+    const videoElement = document.querySelector('video');
+
+    // 尝试从本地存储恢复位置
+    chrome.storage.local.get([currentUrl], function(result) {
+        let modalPosition;
+
+        if (result[currentUrl]) {
+            // 使用保存的位置
+            modalPosition = result[currentUrl];
+            console.log('从本地存储恢复位置:', modalPosition);
+        } else if (videoElement) {
+            // 有 video 元素，使用 video 定位
+            const videoPosition = videoElement.getBoundingClientRect();
+            const videoHeight = videoElement.offsetHeight;
+            modalPosition = {
+                left: videoPosition.left + videoPosition.width * 5 / 200,
+                width: videoPosition.width * 95 / 100,
+                top: videoPosition.top + videoHeight - MODEL_HEIGHT - 50
+            };
+            console.log('使用 video 元素定位:', modalPosition);
+        } else {
+            // 没有 video 元素，使用浏览器可视窗口底部定位
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            modalPosition = {
+                left: windowWidth * 0.05,
+                width: windowWidth * 0.9,
+                top: windowHeight - MODEL_HEIGHT - 50
+            };
+            console.log('无 video 元素，使用窗口底部定位:', modalPosition);
+        }
+
+        // 设置 modal 的位置
+        modal.style.left = modalPosition.left + 'px';
+        modal.style.top = modalPosition.top + 'px';
+        modal.style.width = modalPosition.width + 'px';
+        modal.style.height = MODEL_HEIGHT + 'px';
+
+        // 标记已定位
+        modal.dataset.positioned = 'true';
+
+        if (callback) callback();
+    });
+}
+
 function AddMenu() {
-    let modelWidth = 30, modelHeight = 70 //遮幕的宽高
-    // 注释掉页面图标，改为通过扩展图标控制
-    // const html = `<div class="tip" id="video_curtain_tip" rounded-container>
-    //                    <img src="https://alohahija-cdn.oss-cn-shanghai.aliyuncs.com/img/modal.png" />
-    //               </div>
-    //               <div class="modal" id="modal" >
-    //                 <div class="move" id="move"></div>
-    //               </div>
-    //               `;
     const html = `<div class="modal" id="modal" >
                     <div class="move" id="move"></div>
                   </div>
@@ -16,18 +57,13 @@ function AddMenu() {
 
     // 确保在body最底部插入
     if (document.body) {
-        // 移除已存在的元素（如果有的话）
-        // const existingTip = document.getElementById("video_curtain_tip");
         const existingModal = document.getElementById("modal");
-        // if (existingTip) existingTip.remove();
         if (existingModal) existingModal.remove();
-        
-        // 在body最底部插入新元素
+
         document.body.insertAdjacentHTML('beforeend', html);
         console.log('HTML 已插入到 body 底部');
     } else {
         console.log('body 元素不存在，等待 body 加载');
-        // 如果 body 还不存在，等待它加载
         const observer = new MutationObserver((mutations, obs) => {
             if (document.body) {
                 obs.disconnect();
@@ -35,7 +71,7 @@ function AddMenu() {
                 console.log('HTML 已插入到 body 底部（延迟插入）');
             }
         });
-        
+
         observer.observe(document.documentElement, {
             childList: true,
             subtree: true
@@ -44,52 +80,29 @@ function AddMenu() {
 
     console.log('init modal sdk ...');
 
-    // 使用 MutationObserver 监听 DOM 变化
-    const observer = new MutationObserver((mutations, obs) => {
-        const videoElement = document.querySelector('video');
-        if (videoElement) {
-            obs.disconnect(); // 停止观察
-            // 计算视频元素的绝对位置
-            const videoPosition = videoElement.getBoundingClientRect();
-            // 获取视频元素的高度，用于计算底部位置
-            const videoHeight = videoElement.offsetHeight;
+    const modal = document.querySelector('.modal');
 
-            // 获取当前网址
-            const currentUrl = window.location.href;
-            
-            // 尝试从本地存储恢复位置
-            chrome.storage.local.get([currentUrl], function(result) {
-                let modalPosition;
-                
-                if (result[currentUrl]) {
-                    // 使用保存的位置
-                    modalPosition = result[currentUrl];
-                    console.log('从本地存储恢复位置:', modalPosition);
-                } else {
-                    // 使用默认位置（视频底部）
-                    modalPosition = {
-                        left: videoPosition.left + videoPosition.width * 5 / 200,
-                        width: videoPosition.width * 95 / 100,
-                        top: videoPosition.top + videoHeight - modelHeight - 50
-                    };
-                    console.log('使用默认位置:', modalPosition);
-                }
+    // 先检查是否已有 video 元素
+    const videoElement = document.querySelector('video');
+    if (videoElement) {
+        // 已有 video，直接定位
+        positionModal(modal);
+    } else {
+        // 没有 video，使用 MutationObserver 等待 video 出现
+        const observer = new MutationObserver((mutations, obs) => {
+            const videoElement = document.querySelector('video');
+            if (videoElement) {
+                obs.disconnect();
+                console.log('检测到 video 元素出现');
+                positionModal(modal);
+            }
+        });
 
-                //设置model的left和top
-                const modal = document.querySelector('.modal');
-                modal.style.left = modalPosition.left + 'px';
-                modal.style.top = modalPosition.top + 'px';
-                modal.style.width = modalPosition.width + 'px';
-                modal.style.height = modelHeight + 'px';
-            });
-        }
-    });
-
-    // 开始观察整个文档的变化
-    observer.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
 }
 
 function dragElement(elmnt) {
@@ -195,8 +208,19 @@ window.onload = function () {
             const modal = document.getElementById("modal");
             if (modal) {
                 if (modal.style.display == "" || modal.style.display == "none") {
-                    console.log('显示 modal');
-                    modal.style.display = "inline";
+                    // 显示遮幕前，检查是否已定位
+                    if (modal.dataset.positioned !== 'true') {
+                        console.log('遮幕未定位，进行定位');
+                        positionModal(modal, function() {
+                            console.log('显示 modal');
+                            modal.style.display = "inline";
+                            sendResponse({success: true, visible: true});
+                        });
+                        return true; // 异步响应
+                    } else {
+                        console.log('显示 modal');
+                        modal.style.display = "inline";
+                    }
                 } else if (modal.style.display == "inline") {
                     console.log('隐藏 modal');
                     modal.style.display = "none";

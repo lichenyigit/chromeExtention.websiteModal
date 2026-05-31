@@ -16,22 +16,24 @@ function positionModal(modal, callback) {
             console.log('从本地存储恢复位置:', modalPosition);
         } else if (videoElement) {
             // 有 video 元素，使用 video 定位
+            // getBoundingClientRect 返回的是相对视口的坐标，叠加滚动偏移转换为相对页面的绝对坐标
             const videoPosition = videoElement.getBoundingClientRect();
             const videoHeight = videoElement.offsetHeight;
             modalPosition = {
-                left: videoPosition.left + videoPosition.width * 5 / 200,
+                left: videoPosition.left + window.scrollX + videoPosition.width * 5 / 200,
                 width: videoPosition.width * 95 / 100,
-                top: videoPosition.top + videoHeight - MODEL_HEIGHT - 50
+                top: videoPosition.top + window.scrollY + videoHeight - MODEL_HEIGHT - 50
             };
             console.log('使用 video 元素定位:', modalPosition);
         } else {
             // 没有 video 元素，使用浏览器可视窗口底部定位
+            // 叠加滚动偏移，使弹窗定位到当前可视区域底部对应的页面绝对坐标
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
             modalPosition = {
-                left: windowWidth * 0.05,
+                left: windowWidth * 0.05 + window.scrollX,
                 width: windowWidth * 0.9,
-                top: windowHeight - MODEL_HEIGHT - 50
+                top: windowHeight - MODEL_HEIGHT - 50 + window.scrollY
             };
             console.log('无 video 元素，使用窗口底部定位:', modalPosition);
         }
@@ -126,9 +128,13 @@ function dragElement(elmnt) {
         pos2 = pos4 - e.clientY;
         pos3 = e.clientX;
         pos4 = e.clientY;
+        // 基于已设置的样式值计算（绝对定位坐标，相对页面），避免 offsetTop/offsetLeft
+        // 受定位祖先影响导致拖动起跳
+        const curTop = parseInt(elmnt.style.top) || 0;
+        const curLeft = parseInt(elmnt.style.left) || 0;
         // set the element's new position:
-        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        elmnt.style.top = (curTop - pos2) + "px";
+        elmnt.style.left = (curLeft - pos1) + "px";
     }
 
     function closeDragElement() {

@@ -22,7 +22,7 @@
 .modal {
     display: none;
     float: left;
-    position: fixed;
+    position: absolute;
     min-width: 20px;
     min-height: 10px;
     z-index: 2147483647;

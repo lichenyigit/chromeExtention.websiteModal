@@ -52,9 +52,9 @@ function positionModal(modal, callback) {
 }
 
 function AddMenu() {
-    const html = `<div class="modal" id="modal" >
-                    <div class="move" id="move"></div>
-                  </div>
+    const html = `<shugua-subtitles-model class="modal" id="modal" >
+                    <shugua-subtitles-model class="move" id="move"></shugua-subtitles-model>
+                  </shugua-subtitles-model>
                   `;
 
     // 确保在body最底部插入

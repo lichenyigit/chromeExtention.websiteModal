@@ -4,7 +4,10 @@
       "Bash(dir /s \"D:\\\\git_res\\\\html\\\\chromeExtention.websiteModal\")",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git commit -m '@ *)",
+      "Bash(git commit *)",
+      "Bash(rm .git/COMMIT_EDITMSG_FIX)"
     ]
   }
 }

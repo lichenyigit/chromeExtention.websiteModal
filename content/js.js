@@ -52,14 +52,14 @@ function positionModal(modal, callback) {
 }
 
 function AddMenu() {
-    const html = `<shugua-subtitles-model class="modal" id="modal" >
-                    <shugua-subtitles-model class="move" id="move"></shugua-subtitles-model>
+    const html = `<shugua-subtitles-model class="shugua-subtitles-model-modal" id="shugua-subtitles-model-modal" >
+                    <shugua-subtitles-model class="shugua-subtitles-model-move" id="shugua-subtitles-model-move"></shugua-subtitles-model>
                   </shugua-subtitles-model>
                   `;
 
     // 确保在body最底部插入
     if (document.body) {
-        const existingModal = document.getElementById("modal");
+        const existingModal = document.getElementById("shugua-subtitles-model-modal");
         if (existingModal) existingModal.remove();
 
         document.body.insertAdjacentHTML('beforeend', html);
@@ -82,7 +82,7 @@ function AddMenu() {
 
     console.log('init modal sdk ...');
 
-    const modal = document.querySelector('.modal');
+    const modal = document.querySelector('.shugua-subtitles-model-modal');
 
     // 先检查是否已有 video 元素
     const videoElement = document.querySelector('video');
@@ -155,9 +155,9 @@ function dragElement(elmnt) {
         });
     }
 
-    if (document.getElementById("move")) {
+    if (document.getElementById("shugua-subtitles-model-move")) {
         /* if present, the header is where you move the DIV from:*/
-        document.getElementById("move").onmousedown = dragMouseDown;
+        document.getElementById("shugua-subtitles-model-move").onmousedown = dragMouseDown;
     } else {
         /* otherwise, move the DIV from anywhere inside the DIV:*/
         elmnt.onmousedown = dragMouseDown;
@@ -166,7 +166,7 @@ function dragElement(elmnt) {
 
 // 确保 modal 始终在最高层级
 function ensureTopLayer() {
-    const modal = document.getElementById("modal");
+    const modal = document.getElementById("shugua-subtitles-model-modal");
     if (!modal || modal.style.display === "none" || modal.style.display === "") {
         return; // modal 不存在或未显示时不处理
     }
@@ -175,7 +175,7 @@ function ensureTopLayer() {
     let maxZ = 0;
     const allElements = document.querySelectorAll('*');
     allElements.forEach(el => {
-        if (el === modal || el.closest('#modal')) return; // 跳过 modal 自身
+        if (el === modal || el.closest('#shugua-subtitles-model-modal')) return; // 跳过 modal 自身
         const z = parseInt(window.getComputedStyle(el).zIndex);
         if (!isNaN(z) && z > maxZ) {
             maxZ = z;
@@ -200,13 +200,13 @@ console.log('=== 脚本开始加载 ===');
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action === "toggleModal") {
         console.log('收到切换遮幕消息');
-        let modal = document.getElementById("modal");
+        let modal = document.getElementById("shugua-subtitles-model-modal");
 
         // 如果 modal 不存在，先创建它
         if (!modal) {
             console.log('Modal 不存在，先创建');
             AddMenu();
-            modal = document.getElementById("modal");
+            modal = document.getElementById("shugua-subtitles-model-modal");
             if (modal) {
                 dragElement(modal);
             }
@@ -245,14 +245,14 @@ window.onload = function () {
     
     // 注释掉 tip 元素的检查，改为只检查 modal
     // if (document.getElementById("video_curtain_tip") == null) {
-    if (document.getElementById("modal") == null) {
+    if (document.getElementById("shugua-subtitles-model-modal") == null) {
         console.log('未找到 modal 元素，准备添加菜单');
         AddMenu();
     } else {
         console.log('已存在 modal 元素');
     }
 
-    const modal = document.getElementById("modal");
+    const modal = document.getElementById("shugua-subtitles-model-modal");
     console.log('modal 元素状态:', modal ? '存在' : '不存在');
     if (modal) {
         console.log('开始初始化拖拽功能');
